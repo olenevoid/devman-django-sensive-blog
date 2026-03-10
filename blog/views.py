@@ -6,6 +6,10 @@ def get_related_posts_count(tag):
     return tag.posts.count()
 
 
+def get_likes_count(post: Post):
+    return len(post.likes.all())
+
+
 def serialize_post(post):
     return {
         'title': post.title,
@@ -29,7 +33,7 @@ def serialize_tag(tag):
 
 def index(request):
 
-    most_popular_posts = []  # TODO. Как это посчитать?
+    most_popular_posts = get_most_popular_posts()
 
     fresh_posts = Post.objects.order_by('published_at')
     most_fresh_posts = list(fresh_posts)[-5:]
@@ -79,7 +83,7 @@ def post_detail(request, slug):
     popular_tags = sorted(all_tags, key=get_related_posts_count)
     most_popular_tags = popular_tags[-5:]
 
-    most_popular_posts = []  # TODO. Как это посчитать?
+    most_popular_posts = get_most_popular_posts()
 
     context = {
         'post': serialized_post,
@@ -98,7 +102,7 @@ def tag_filter(request, tag_title):
     popular_tags = sorted(all_tags, key=get_related_posts_count)
     most_popular_tags = popular_tags[-5:]
 
-    most_popular_posts = []  # TODO. Как это посчитать?
+    most_popular_posts = get_most_popular_posts()
 
     related_posts = tag.posts.all()[:20]
 
@@ -117,3 +121,9 @@ def contacts(request):
     # позже здесь будет код для статистики заходов на эту страницу
     # и для записи фидбека
     return render(request, 'contacts.html', {})
+
+
+def get_most_popular_posts(number_of_posts = 5):
+    all_posts = Post.objects.all()
+    popular_posts = sorted(all_posts, key=get_likes_count, reverse=True)
+    return popular_posts[:number_of_posts]
