@@ -7,10 +7,6 @@ def get_related_posts_count(tag):
     return tag.posts.count()
 
 
-def get_likes_count(post: Post):
-    return post.likes_count
-
-
 def serialize_post(post):
     return {
         'title': post.title,
@@ -126,5 +122,4 @@ def contacts(request):
 
 def get_most_popular_posts(number_of_posts = 5):
     all_posts = Post.objects.annotate(likes_count=Count('likes'))
-    popular_posts = sorted(all_posts, key=get_likes_count, reverse=True)
-    return popular_posts[:number_of_posts]
+    return all_posts.order_by('-likes_count')[:number_of_posts]
