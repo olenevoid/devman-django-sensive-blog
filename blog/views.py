@@ -7,6 +7,16 @@ def get_related_posts_count(tag):
     return tag.posts.count()
 
 
+def get_most_popular_posts(number_of_posts = 5):
+    all_posts = Post.objects.annotate(likes_count=Count('likes'))
+    return all_posts.order_by('-likes_count')[:number_of_posts]
+
+
+def get_most_popular_tags(number_of_tags = 5):
+    all_tags = Tag.objects.annotate(related_posts_count=Count('posts'))
+    return all_tags.order_by('-related_posts_count')[:number_of_tags]
+
+
 def serialize_post(post):
     return {
         'title': post.title,
@@ -35,9 +45,7 @@ def index(request):
     fresh_posts = Post.objects.order_by('published_at')
     most_fresh_posts = list(fresh_posts)[-5:]
 
-    tags = Tag.objects.all()
-    popular_tags = sorted(tags, key=get_related_posts_count)
-    most_popular_tags = popular_tags[-5:]
+    most_popular_tags = get_most_popular_tags()
 
     context = {
         'most_popular_posts': [
@@ -76,10 +84,7 @@ def post_detail(request, slug):
         'tags': [serialize_tag(tag) for tag in related_tags],
     }
 
-    all_tags = Tag.objects.all()
-    popular_tags = sorted(all_tags, key=get_related_posts_count)
-    most_popular_tags = popular_tags[-5:]
-
+    most_popular_tags = get_most_popular_tags()
     most_popular_posts = get_most_popular_posts()
 
     context = {
@@ -95,10 +100,7 @@ def post_detail(request, slug):
 def tag_filter(request, tag_title):
     tag = Tag.objects.get(title=tag_title)
 
-    all_tags = Tag.objects.all()
-    popular_tags = sorted(all_tags, key=get_related_posts_count)
-    most_popular_tags = popular_tags[-5:]
-
+    most_popular_tags = get_most_popular_tags()
     most_popular_posts = get_most_popular_posts()
 
     related_posts = tag.posts.all()[:20]
@@ -118,8 +120,3 @@ def contacts(request):
     # позже здесь будет код для статистики заходов на эту страницу
     # и для записи фидбека
     return render(request, 'contacts.html', {})
-
-
-def get_most_popular_posts(number_of_posts = 5):
-    all_posts = Post.objects.annotate(likes_count=Count('likes'))
-    return all_posts.order_by('-likes_count')[:number_of_posts]
