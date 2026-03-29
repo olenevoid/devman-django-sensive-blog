@@ -14,7 +14,7 @@ class PostQuerySet(models.QuerySet):
 class TagQuerySet(models.QuerySet):
     
     def popular(self):
-        all_tags = Tag.objects.annotate(related_posts_count=Count('posts'))
+        all_tags = self.annotate(related_posts_count=Count('posts'))
         return all_tags.order_by('-related_posts_count')
 
 
