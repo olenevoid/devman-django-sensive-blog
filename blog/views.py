@@ -7,12 +7,9 @@ def get_related_posts_count(tag):
     return tag.posts.count()
 
 
-def get_most_popular_posts(posts = None, number_of_posts = 5):
-    if posts is None:
-        posts = Post.objects.all()
-    annotated_posts = posts.annotate(likes_count=Count('likes'))
-
-    return annotated_posts.order_by('-likes_count')[:number_of_posts]
+def get_most_popular_posts(number_of_posts = 5):
+    all_posts = Post.objects.annotate(likes_count=Count('likes'))
+    return all_posts.order_by('-likes_count')[:number_of_posts]
 
 
 def get_most_popular_tags(number_of_tags = 5):
@@ -42,10 +39,10 @@ def serialize_tag(tag):
 
 
 def index(request):
-    all_posts = Post.objects.all().prefetch_related('author')
-    most_popular_posts = get_most_popular_posts(posts=all_posts)
 
-    fresh_posts = all_posts.order_by('published_at')
+    most_popular_posts = get_most_popular_posts()
+
+    fresh_posts = Post.objects.order_by('published_at')
     most_fresh_posts = list(fresh_posts)[-5:]
 
     most_popular_tags = get_most_popular_tags()
