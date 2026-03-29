@@ -17,11 +17,6 @@ def get_most_fresh_posts(number_of_posts = 5):
     return all_posts.order_by('-published_at')[:number_of_posts]
 
 
-def get_most_popular_tags(number_of_tags = 5):
-    all_tags = Tag.objects.annotate(related_posts_count=Count('posts'))
-    return all_tags.order_by('-related_posts_count')[:number_of_tags]
-
-
 def get_posts_with_comments_count(posts):
     posts_ids = [post.id for post in posts]
     posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(comments_count=Count('comments'))
@@ -74,7 +69,7 @@ def index(request):
     most_fresh_posts = get_most_fresh_posts().prefetch_related('author')
     most_fresh_posts = get_posts_with_comments_count(most_fresh_posts)
 
-    most_popular_tags = get_most_popular_tags()
+    most_popular_tags = Tag.objects.popular()[:5]
 
     context = {
         'most_popular_posts': [
@@ -113,7 +108,7 @@ def post_detail(request, slug):
         'tags': [serialize_tag(tag) for tag in related_tags],
     }
 
-    most_popular_tags = get_most_popular_tags()
+    most_popular_tags = Tag.objects.popular()[:5]
     most_popular_posts = get_most_popular_posts()
 
     context = {
@@ -129,7 +124,7 @@ def post_detail(request, slug):
 def tag_filter(request, tag_title):
     tag = Tag.objects.get(title=tag_title)
 
-    most_popular_tags = get_most_popular_tags()
+    most_popular_tags = Tag.objects.popular()[:5]
     most_popular_posts = get_most_popular_posts()
 
     related_posts = tag.posts.all()[:20]
