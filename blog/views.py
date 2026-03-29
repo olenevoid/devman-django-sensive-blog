@@ -44,10 +44,12 @@ def serialize_tag(tag):
 
 def index(request):
     most_popular_posts = Post.objects.popular()[:5]\
-        .prefetch_related('author').fetch_with_comments_count()
+        .prefetch_related('author')\
+            .prefetch_related('tags').fetch_with_comments_count()
 
     most_fresh_posts = Post.objects.order_by('-published_at')[:5]\
-        .prefetch_related('author').fetch_with_comments_count()
+        .prefetch_related('author')\
+            .prefetch_related('tags').fetch_with_comments_count()
 
     most_popular_tags = Tag.objects.popular()[:5]
 
