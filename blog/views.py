@@ -50,7 +50,11 @@ def index(request):
 
 
 def post_detail(request, slug):
-    post = Post.objects.get(slug=slug)
+    post = Post.objects\
+        .select_related('author')\
+        .prefetch_related('likes')\
+        .fetch_tags_with_posts_count()\
+        .get(slug=slug)
     comments = post.comments.prefetch_related('author')
     serialized_comments = []
     for comment in comments:
@@ -62,7 +66,7 @@ def post_detail(request, slug):
 
     likes = post.likes.all()
 
-    related_tags = post.tags.prefetch_with_posts_count()
+    related_tags = post.tags.all()
 
     serialized_post = {
         'title': post.title,
