@@ -17,8 +17,7 @@ class PostQuerySet(models.QuerySet):
         return all_posts.order_by("-likes_count")
 
     def fetch_with_comments_count(self):
-        posts = self
-        posts_ids = [post.id for post in posts]
+        posts_ids = [post.id for post in self]
         posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(
             comments_count=Count("comments")
         )
@@ -26,9 +25,9 @@ class PostQuerySet(models.QuerySet):
             "id", "comments_count"
         )
         count_for_id = dict(ids_and_comments)
-        for post in posts:
+        for post in self:
             post.comments_count = count_for_id[post.id]
-        return posts
+        return self
 
     def fetch_tags_with_posts_count(self):
         return self.prefetch_related(
