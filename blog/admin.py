@@ -1,22 +1,23 @@
 from django.contrib import admin
-from blog.models import Post, Tag, Comment
+
+from blog.models import Comment, Post, Tag
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'published_at', 'slug']
-    raw_id_fields = ['likes', 'tags']
-    search_fields = ['title']
-    list_filter = ['tags', 'author']
+    list_display = ["title", "author", "published_at", "slug"]
+    raw_id_fields = ["likes", "tags"]
+    search_fields = ["title"]
+    list_filter = ["tags", "author"]
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ['title']
-    search_fields = ['title']
+    list_display = ["title"]
+    search_fields = ["title"]
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['author', 'post', 'published_at']
-    raw_id_fields = ['author', 'post']
+    list_display = ["author", "post", "published_at"]
+    raw_id_fields = ["author", "post"]
