@@ -1,0 +1,12 @@
+# Code formatting
+black==24.3.0
+isort==5.13.2
+
+# Linting
+flake8==7.0.0
+
+# Import cleanup
+autoflake==2.3.1
+
+# Pre-commit hooks
+pre-commit==3.7.0
