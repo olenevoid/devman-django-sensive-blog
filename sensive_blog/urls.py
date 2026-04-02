@@ -5,6 +5,8 @@ from django.contrib import admin
 from django.urls import path
 
 from blog import views
+from sensive_blog.settings import DEBUG
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -14,5 +16,8 @@ urlpatterns = [
     path("contacts/", views.contacts, name="contacts"),
     path("", views.index, name="index"),
 ]
-urlpatterns += debug_toolbar_urls()
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+if DEBUG:
+    urlpatterns += debug_toolbar_urls()
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
